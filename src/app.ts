@@ -1,28 +1,45 @@
-import express, { Application } from "express"
+import express, { Application, Request, Response, NextFunction } from "express"
 import bodyParser from "body-parser"
-
-// import router from "./routes"
-// import connect from "./db/connection"
+import repo from "./routes/repo"
 
 const cors = require("cors")
+const app: Application = express()
+const volleyball = require("volleyball")
 
-function onInit() {
-  const app: Application = express()
+app.use(volleyball)
 
-  app.use(bodyParser.json())
-  app.use(cors())
+console.log("INIT")
 
-  app.get("/", (req, res) => {
-    return res.send({
-      message: "hello",
-    })
-  })
-  // connect()
-  // app.use(router)
+const notFound = (err: Error, req: Request, res: Response, next: NextFunction): void => {
+  const error = new Error(`Not Found - ${req.originalUrl}`)
+  res.status(404)
 
-  app.listen(process.env.PORT || 3000, () => {
-    console.log(`auth service is listening at port ${process.env.PORT || 3000}!`)
+  next(error)
+}
+
+const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
+  res.status(res.statusCode || 500)
+  res.json({
+    message: err.message,
+    stack: err.stack,
   })
 }
 
-onInit()
+app.use(bodyParser.json())
+app.use(cors())
+
+app.get("/", (req: Request, res: Response, next: NextFunction) => {
+  res.json({
+    message: "hello from /",
+  })
+})
+
+// API REPO ENDPOINT ROUTES
+app.use("/api/repo", repo)
+
+app.use(notFound)
+app.use(errorHandler)
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`repo service is listening at port ${process.env.PORT || 3000}!`)
+})
