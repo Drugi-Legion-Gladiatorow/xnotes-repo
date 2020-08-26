@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express"
 import axios from "axios"
+
 const repo = Router()
 const GitHub = require("octocat")
 
@@ -31,21 +32,12 @@ repo.get("/", (req: Request, res: Response, next: NextFunction) => {
   })
 })
 
-const getRepos = async (name: string) => {
-  try {
-    const { data } = await axios.get(`https://api.github.com/users/${name}/repos`)
-    return data
-  } catch (err) {
-    throw new Error(err)
-  }
-}
-
 repo.get("/findRepo/:repoName", async (req: Request, res: Response, next: NextFunction) => {
   console.log("hello from /api/repo/reponame")
   const { repoName } = req.params
-
-  const repos = await getRepos("antoniwrobel")
-  res.json(repos)
+  const name = "antoniwrobel"
+  const { data } = await axios.get(`https://api.github.com/users/${name}/repos`)
+  res.json(data)
 })
 
 export default repo
