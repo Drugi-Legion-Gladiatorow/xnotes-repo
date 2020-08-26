@@ -1,11 +1,28 @@
-import express, { Request, Response } from "express";
+import express, { Application } from "express"
+import bodyParser from "body-parser"
 
-const app = express();
+// import router from "./routes"
+// import connect from "./db/connection"
 
-app.get("/", (req: Request, res: Response) => {
-  console.log("hi there");
-});
+const cors = require("cors")
 
-app.listen("3000", () => {
-  console.log("service listening on port 3000");
-});
+function onInit() {
+  const app: Application = express()
+
+  app.use(bodyParser.json())
+  app.use(cors())
+
+  app.get("/", (req, res) => {
+    return res.send({
+      message: "hello",
+    })
+  })
+  // connect()
+  // app.use(router)
+
+  app.listen(process.env.PORT || 3000, () => {
+    console.log(`auth service is listening at port ${process.env.PORT || 3000}!`)
+  })
+}
+
+onInit()
