@@ -20,12 +20,12 @@ app.use(cors())
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.json({
-    message: "=> from /api/repo",
+    message: "=> from /api",
   })
 })
 
 // API REPO ENDPOINT ROUTES
-app.use("/api/repo", repo)
+app.use("/api", repo)
 
 app.use(notFound)
 app.use(errorHandler)

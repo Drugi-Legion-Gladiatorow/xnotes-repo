@@ -12,7 +12,7 @@ const userData = {
   displayName: "null",
 }
 
-// http://localhost:5000/api/repo
+// http://localhost:5000/api
 repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
   // const { githubId, accessToken, username, displayName } = req.query
   // const userData: Request["user"] = {
@@ -33,9 +33,10 @@ repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
   })
 })
 
-// http://localhost:5000/api/repo/findRepo/:repoName
-repo.get("/findRepo/:repoName", async (req: Request, res: Response, next: NextFunction) => {
-  const { repoName } = req.params
+// http://localhost:5000/api/find-repo/:name
+repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.params)
+  const { name: repoName } = req.params
   const { username, accessToken } = userData
   const fullRepoName = `${username}/${repoName}`
 
