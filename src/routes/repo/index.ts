@@ -5,6 +5,7 @@ require("dotenv").config()
 const repo = Router()
 const GitHub = require("octocat")
 
+// MOCKED USER DATA
 const userData = {
   githubId: "31203524",
   accessToken: process.env.USER_ACCESS_TOKEN,
@@ -12,7 +13,7 @@ const userData = {
   displayName: "null",
 }
 
-// http://localhost:5000/api
+// http://localhost:PORT/api
 repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
   // const { githubId, accessToken, username, displayName } = req.query
   // const userData: Request["user"] = {
@@ -22,18 +23,20 @@ repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
   //   displayName: displayName as string,
   // }
 
-  if (!userData.githubId || !userData.accessToken) {
+  const { githubId, accessToken } = userData
+
+  if (!githubId || !accessToken) {
     const error = new Error("user not found")
     res.status(404)
     return next(error)
   }
 
   res.json({
-    message: "=> from /api/repo",
+    message: "=> from /api",
   })
 })
 
-// http://localhost:5000/api/find-repo/:name
+// http://localhost:PORT/api/find-repo/:name
 repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunction) => {
   const { name: repoName } = req.params
   const { username, accessToken } = userData
