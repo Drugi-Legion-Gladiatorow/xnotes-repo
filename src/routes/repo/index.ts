@@ -1,43 +1,57 @@
 import { Router, Request, Response, NextFunction } from "express"
-import axios from "axios"
+require("dotenv").config()
 
 const repo = Router()
 const GitHub = require("octocat")
 
-// ALL ENDPOINTS ARE PREPENDED WITH: API/REPO
+const userData = {
+  githubId: "31203524",
+  accessToken: process.env.USER_ACCESS_TOKEN,
+  username: "antoniwrobel",
+  displayName: "null",
+}
 
 // http://localhost:5000/api/repo
-repo.get("/", (req: Request, res: Response, next: NextFunction) => {
-  console.log("hello from /api/repo")
-  const { githubId, accessToken, username, displayName } = req.query
-
-  const userData: Request["user"] = {
-    githubId: githubId as string,
-    accessToken: accessToken as string,
-    username: username as string,
-    displayName: displayName as string,
-  }
+repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
+  // const { githubId, accessToken, username, displayName } = req.query
+  // const userData: Request["user"] = {
+  //   githubId: githubId as string,
+  //   accessToken: accessToken as string,
+  //   username: username as string,
+  //   displayName: displayName as string,
+  // }
 
   if (!userData.githubId || !userData.accessToken) {
-    return next("no user")
+    const error = new Error("user not found")
+    res.status(409)
+    return next(error)
   }
 
-  const client = new GitHub({
-    token: userData.accessToken,
-  })
-
-  req.user = userData
   res.json({
-    message: "hello",
+    message: "=> from /api/repo",
   })
 })
 
+// http://localhost:5000/api/repo/findRepo/:repoName
 repo.get("/findRepo/:repoName", async (req: Request, res: Response, next: NextFunction) => {
-  console.log("hello from /api/repo/reponame")
   const { repoName } = req.params
-  const name = "antoniwrobel"
-  const { data } = await axios.get(`https://api.github.com/users/${name}/repos`)
-  res.json(data)
+  const { username, accessToken } = userData
+  const fullRepoName = `${username}/${repoName}`
+
+  const client = new GitHub({
+    token: accessToken,
+  })
+
+  try {
+    const repo = await client.repo(fullRepoName)
+    const info = await repo.info()
+
+    res.json({
+      url: info.html_url,
+    })
+  } catch (error) {
+    return next(error)
+  }
 })
 
 export default repo
