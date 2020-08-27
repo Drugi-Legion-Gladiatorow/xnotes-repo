@@ -35,9 +35,9 @@ repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
 
 // http://localhost:5000/api/find-repo/:name
 repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.params)
   const { name: repoName } = req.params
   const { username, accessToken } = userData
+
   const fullRepoName = `${username}/${repoName}`
 
   const client = new GitHub({
@@ -46,10 +46,10 @@ repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunct
 
   try {
     const repo = await client.repo(fullRepoName)
-    const info = await repo.info()
+    const { html_url } = await repo.info()
 
     res.json({
-      url: info.html_url,
+      url: html_url,
     })
   } catch (error) {
     return next(error)
