@@ -7,7 +7,7 @@ const GitHub = require("octocat")
 const userData = {
   githubId: "31203524",
   accessToken: process.env.USER_ACCESS_TOKEN,
-  username: "antoniwrobel",
+  username: process.env.USER_NAME,
   displayName: "null",
 }
 
