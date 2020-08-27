@@ -1,10 +1,10 @@
 import express, { Application, Request, Response, NextFunction } from "express"
+import { notFound, errorHandler } from "./middlewares"
 
 const volleyball = require("volleyball")
 const cors = require("cors")
 const morgan = require("morgan")
 const helmet = require("helmet")
-const middlewares = require("./middlewares")
 
 const repo = require("./routes/repo")
 
@@ -27,8 +27,8 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 // API REPO ENDPOINT ROUTES
 app.use("/api/repo", repo)
 
-app.use(middlewares.notFound)
-app.use(middlewares.errorHandler)
+app.use(notFound)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3000
 
