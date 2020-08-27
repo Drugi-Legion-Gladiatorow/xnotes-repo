@@ -1,13 +1,12 @@
 import express, { Application, Request, Response, NextFunction } from "express"
 
-import repo from "./routes/repo"
-
 const volleyball = require("volleyball")
 const cors = require("cors")
 const morgan = require("morgan")
 const helmet = require("helmet")
-
 const middlewares = require("./middlewares")
+
+const repo = require("./routes/repo")
 
 const app: Application = express()
 

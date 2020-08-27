@@ -55,4 +55,4 @@ repo.get("/findRepo/:repoName", async (req: Request, res: Response, next: NextFu
   }
 })
 
-export default repo
+module.exports = repo
