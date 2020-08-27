@@ -6,6 +6,7 @@ const volleyball = require("volleyball")
 const cors = require("cors")
 const morgan = require("morgan")
 const helmet = require("helmet")
+
 const middlewares = require("./middlewares")
 
 const app: Application = express()
@@ -18,7 +19,11 @@ app.use(volleyball)
 app.use(express.json())
 app.use(cors())
 
-app.get("/", (req: Request, res: Response, next: NextFunction) => {})
+app.get("/", (req: Request, res: Response, next: NextFunction) => {
+  res.json({
+    message: "=> from /api/repo",
+  })
+})
 
 // API REPO ENDPOINT ROUTES
 app.use("/api/repo", repo)
