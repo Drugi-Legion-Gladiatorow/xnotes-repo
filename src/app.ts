@@ -2,23 +2,16 @@ import express, { Application, Request, Response, NextFunction } from "express"
 
 import repo from "./routes/repo"
 
-const cors = require("cors")
-const app: Application = express()
 const volleyball = require("volleyball")
+const cors = require("cors")
+const morgan = require("morgan")
+const helmet = require("helmet")
+const middlewares = require("./middlewares")
 
-const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
-  res.status(res.statusCode || 500)
-  res.json({
-    message: err.message,
-    stack: err.stack,
-  })
-}
+const app: Application = express()
 
-// const notFound = (err: Error, req: Request, res: Response, next: NextFunction) => {
-//   res.status(404)
-//   const error = new Error(`Not found - ${req.originalUrl}`)
-//   next(error)
-// }
+app.use(morgan("dev"))
+app.use(helmet())
 
 app.use(volleyball)
 
@@ -30,8 +23,8 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {})
 // API REPO ENDPOINT ROUTES
 app.use("/api/repo", repo)
 
-// app.use(notFound)
-app.use(errorHandler)
+app.use(middlewares.notFound)
+app.use(middlewares.errorHandler)
 
 const PORT = process.env.PORT || 3000
 

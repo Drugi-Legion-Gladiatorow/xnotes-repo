@@ -5,7 +5,7 @@ const repo = Router()
 const GitHub = require("octocat")
 
 const userData = {
-  githubId: "31203524",
+  githubId: null,
   accessToken: process.env.USER_ACCESS_TOKEN,
   username: process.env.USER_NAME,
   displayName: "null",
