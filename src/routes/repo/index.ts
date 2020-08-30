@@ -7,7 +7,7 @@ const GitHub = require("octocat")
 
 // MOCKED USER DATA
 const userData = {
-  githubId: "31203524",
+  githubId: "31203524", //7773964(mp)
   accessToken: process.env.USER_ACCESS_TOKEN,
   username: process.env.USER_NAME,
   displayName: "null",
@@ -53,6 +53,26 @@ repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunct
 
     res.json({
       url: html_url,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFunction) => {
+  const { name: repoName } = req.params
+  const { accessToken } = userData
+
+  const client = new GitHub({
+    token: accessToken,
+  })
+
+  try {
+    const repo = await client.createRepo({info: repoName})
+    const info = await repo
+
+    res.json({
+      info: info,
     })
   } catch (error) {
     return next(error)
