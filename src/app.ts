@@ -62,5 +62,3 @@ const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
   console.log(`repo service is listening at port ${PORT}!`)
 })
-
-// login?_id=5f46931e39ad63002ce5c8dc&githubId=31203524&accessToken=d1f98b1427295b8de89561e9a849d66aeb4bb34d&username=antoniwrobel&displayName=null
