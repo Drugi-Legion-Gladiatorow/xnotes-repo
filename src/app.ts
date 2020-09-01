@@ -1,14 +1,19 @@
-import express, { Application, Request, Response, NextFunction } from "express"
+import express from "express"
 import { notFound, errorHandler } from "./middlewares"
 
+import path from "path"
 const volleyball = require("volleyball")
 const cors = require("cors")
 const morgan = require("morgan")
 const helmet = require("helmet")
 
 const repo = require("./routes/repo")
+const session = require("express-session")
 
-const app: Application = express()
+const app = express()
+
+app.use(session({ secret: "keyboardCat" }))
+app.use(express.static(path.join(__dirname, "public")))
 
 app.use(morgan("dev"))
 app.use(volleyball)
@@ -18,13 +23,34 @@ app.use(express.json())
 app.use(cors())
 
 // http://localhost:PORT
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
+app.get("/", (req, res, next) => {
   res.json({
     message: "=> from /",
   })
 })
 
+// http://localhost:PORT/login?queryString
+app.get("/login", (req, res, next) => {
+  const { accessToken, username } = req.query
+
+  const user = {
+    accessToken: accessToken?.toString(),
+    username: username?.toString(),
+  }
+
+  req.session.user = user
+
+  res.redirect("/home")
+})
+
+app.get("/home", (req, res, next) => {
+  // TODO: check if user is authenticated
+  res.sendFile(path.join(__dirname + "/public/home.html"))
+})
+
 // /API ENDPOINT ROUTES
+
+// localhost:3000/api/=>
 app.use("/api", repo)
 
 // ERROR HANDLERS
@@ -36,3 +62,5 @@ const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
   console.log(`repo service is listening at port ${PORT}!`)
 })
+
+// login?_id=5f46931e39ad63002ce5c8dc&githubId=31203524&accessToken=d1f98b1427295b8de89561e9a849d66aeb4bb34d&username=antoniwrobel&displayName=null

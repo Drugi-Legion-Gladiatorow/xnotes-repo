@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XNotes</title>
+  </head>
+  <body>
+    <p id="user-data"></p>
+  </body>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const userData = document.querySelector("#user-data");
+    if (!params.has("accessToken")) {
+      userData.textContent = "Something went wrong";
+      console.log("no token");
+    } else {
+      userData.textContent = `Hello ${params.get("displayName")}`;
+    }
+  </script>
+</html>

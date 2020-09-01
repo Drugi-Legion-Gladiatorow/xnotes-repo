@@ -1,0 +1,100 @@
+:root {
+  --c-black: #2d3748;
+  --c-gray-dark: #4a5568;
+  --c-gray-light: #edf2f7;
+  --c-primary: #3182ce;
+  --c-white: #ffffff;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  color: var(--c-gray-dark);
+  padding: 0;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--c-gray-light);
+}
+
+.login-form {
+  margin: 1rem;
+  padding: 1rem 2rem;
+  min-width: 18rem;
+  border-radius: 0.5rem;
+  box-shadow: 0px 0px 16px -10px rgba(0, 0, 0, 0.35);
+  background-color: var(--c-white);
+}
+
+.login-form h1 {
+  color: var(--c-black);
+}
+
+.login-form ul {
+  list-style: none;
+  padding: 0;
+  border-top: 1px solid var(--c-gray-light);
+  border-bottom: 1px solid var(--c-gray-light);
+}
+
+.login-form ul li {
+  font-size: 0.725rem;
+  margin: 0.5rem 0.25rem;
+}
+
+.footer {
+  background-color: var(--c-primary);
+  color: var(--c-white);
+  font-size: 0.875rem;
+}
+
+.btn {
+  border: none;
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  padding: 1rem 3rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  background-color: var(--c-primary);
+  color: var(--c-white);
+  transition: filter 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.btn:hover {
+  filter: brightness(0.95);
+  transform: scale(1.05);
+}
+
+.btn-gh {
+  background-color: var(--c-black);
+}
+
+.icon-gh {
+  height: 1.5rem;
+  margin-right: 1rem;
+}
+
+.btn-center {
+  margin: 0 auto;
+}
+
+.t-center {
+  text-align: center;
+}

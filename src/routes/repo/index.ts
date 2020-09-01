@@ -1,9 +1,10 @@
 import { Router, Request, Response, NextFunction } from "express"
+import { Octokit } from "@octokit/core"
+import { getgid } from "process"
 
 require("dotenv").config()
 
 const repo = Router()
-const GitHub = require("octocat")
 
 // MOCKED USER DATA
 const userData = {
@@ -43,13 +44,15 @@ repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunct
 
   const fullRepoName = `${username}/${repoName}`
 
-  const client = new GitHub({
-    token: accessToken,
-  })
+  const octokit = new Octokit({ auth: accessToken })
 
   try {
-    const repo = await client.repo(fullRepoName)
-    const { html_url } = await repo.info()
+    const repo = await octokit.request(`GET /repos/${fullRepoName}`, {
+      owner: username,
+      repo: repoName,
+    })
+
+    const { html_url } = repo.data
 
     res.json({
       url: html_url,
@@ -63,20 +66,28 @@ repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFu
   const { name: repoName } = req.params
   const { accessToken } = userData
 
-  const client = new GitHub({
-    token: accessToken,
-  })
+  const octokit = new Octokit({ auth: accessToken })
 
   try {
-    const repo = await client.createRepo({info: repoName})
-    const info = await repo
+    const resp = await octokit.request("POST /user/repos", {
+      name: repoName,
+    })
 
     res.json({
-      info: info,
+      info: "info",
     })
   } catch (error) {
     return next(error)
   }
+})
+
+repo.post("/save", (req, res, next) => {
+  // commit i push
+
+  // commit i push
+  res.json({
+    message: "success",
+  })
 })
 
 module.exports = repo
