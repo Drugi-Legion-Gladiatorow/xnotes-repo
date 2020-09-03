@@ -12,6 +12,7 @@ const userData = {
   accessToken: process.env.USER_ACCESS_TOKEN,
   username: process.env.USER_NAME,
   displayName: "null",
+  repoName: 'notes'
 }
 
 // http://localhost:PORT/api
@@ -47,11 +48,7 @@ repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunct
   const octokit = new Octokit({ auth: accessToken })
 
   try {
-    const repo = await octokit.request(`GET /repos/${fullRepoName}`, {
-      owner: username,
-      repo: repoName,
-    })
-
+    const repo = await octokit.request(`GET /repos/${fullRepoName}`)
     const { html_url } = repo.data
 
     res.json({
@@ -81,13 +78,28 @@ repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFu
   }
 })
 
-repo.post("/save", (req, res, next) => {
-  // commit i push
+repo.post("/save", async (req: Request, res: Response, next: NextFunction) => {
+  const { accessToken, username, repoName } = userData;
+  const message = 'commit';
 
-  // commit i push
-  res.json({
-    message: "success",
-  })
+  const octokit = new Octokit({ auth: accessToken })
+
+  try {
+    const resp = await octokit.request(`POST /repos/${username}/${repoName}/git/commits`, {
+      accept: 'application/vnd.github.v3+json',
+      message,
+//      tree: TODO
+//      parents: TODO
+    })
+
+    res.json({
+      message: "success",
+    })
+
+  } catch (error) {
+    return next(error)
+  }
+
 })
 
 module.exports = repo
