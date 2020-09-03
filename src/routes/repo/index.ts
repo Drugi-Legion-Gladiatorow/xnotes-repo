@@ -8,7 +8,7 @@ const repo = Router()
 
 // MOCKED USER DATA
 const userData = {
-  githubId: "31203524", //7773964(mp)
+  githubId: process.env.USER_ID,
   accessToken: process.env.USER_ACCESS_TOKEN,
   username: process.env.USER_NAME,
   displayName: "null",
@@ -74,7 +74,7 @@ repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFu
     })
 
     res.json({
-      info: "info",
+      info: "repo has been created",
     })
   } catch (error) {
     return next(error)
