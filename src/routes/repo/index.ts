@@ -12,7 +12,7 @@ const userData = {
   accessToken: process.env.USER_ACCESS_TOKEN,
   username: process.env.USER_NAME,
   displayName: "null",
-  repoName: 'notes'
+  repoName: "notes",
 }
 
 // http://localhost:PORT/api
@@ -79,27 +79,25 @@ repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFu
 })
 
 repo.post("/save", async (req: Request, res: Response, next: NextFunction) => {
-  const { accessToken, username, repoName } = userData;
-  const message = 'commit';
+  const { accessToken, username, repoName } = userData
+  const message = "commit"
 
   const octokit = new Octokit({ auth: accessToken })
 
   try {
     const resp = await octokit.request(`POST /repos/${username}/${repoName}/git/commits`, {
-      accept: 'application/vnd.github.v3+json',
+      accept: "application/vnd.github.v3+json",
       message,
-//      tree: TODO
-//      parents: TODO
+      //      tree: TODO
+      //      parents: TODO
     })
 
     res.json({
       message: "success",
     })
-
   } catch (error) {
     return next(error)
   }
-
 })
 
 module.exports = repo
