@@ -5,6 +5,9 @@ WORKDIR /app
 ENV NODE_ENV dev
 # RUN ls -a 
 
+# install git
+RUN apk add --no-cache git
+
 # Install dependencies:
 RUN npm i -g nodemon ts-node typescript
 RUN npm install
