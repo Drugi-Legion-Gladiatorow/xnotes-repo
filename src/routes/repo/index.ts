@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express"
 import { Octokit } from "@octokit/core"
-import { getgid } from "process"
+import { exec } from "child_process"
 
 require("dotenv").config()
 
@@ -84,13 +84,11 @@ repo.post("/save", async (req: Request, res: Response, next: NextFunction) => {
   const message = "commit"
 
   const octokit = new Octokit({ auth: accessToken })
-
+  // blob ->
   try {
-    const resp = await octokit.request(`POST /repos/${username}/${repoName}/git/commits`, {
+    await octokit.request(`POST /repos/${username}/${repoName}/git/commits`, {
       accept: "application/vnd.github.v3+json",
       message,
-      //      tree: TODO
-      //      parents: TODO
     })
 
     res.json({
@@ -99,6 +97,29 @@ repo.post("/save", async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     return next(error)
   }
+})
+
+repo.get("/update", async (req: Request, res: Response, next: NextFunction) => {
+  const { accessToken, username, repoName } = userData
+
+  const cdToDockerVolume = "cd ../repository"
+  const doesRepoExist = "[ -d .git ];"
+  const gitPull = "git pull;"
+  const gitClone = `git clone https://${accessToken}@github.com/${username}/${repoName}.git .;`
+
+  exec(` ${cdToDockerVolume}; if ${doesRepoExist} then ${gitPull} else ${gitClone} fi `, (err, stdout, stderr) => {
+    if (err) {
+      console.error("cloning error", repoName)
+      console.error(err)
+      next(err)
+    } else {
+      console.log("cloning done", repoName)
+      console.log(stdout)
+      res.json({
+        message: stdout || "repo has been cloned",
+      })
+    }
+  })
 })
 
 module.exports = repo
