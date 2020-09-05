@@ -48,8 +48,9 @@ repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunct
   const octokit = new Octokit({ auth: accessToken })
 
   try {
-    const repo = await octokit.request(`GET /repos/${fullRepoName}`)
-    const { html_url } = repo.data
+    const {
+      data: { html_url },
+    } = await octokit.request(`GET /repos/${fullRepoName}`)
 
     res.json({
       url: html_url,
@@ -66,7 +67,7 @@ repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFu
   const octokit = new Octokit({ auth: accessToken })
 
   try {
-    const resp = await octokit.request("POST /user/repos", {
+    await octokit.request("POST /user/repos", {
       name: repoName,
     })
 

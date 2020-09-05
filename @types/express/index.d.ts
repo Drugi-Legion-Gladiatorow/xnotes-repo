@@ -6,5 +6,9 @@ declare namespace Express {
         username?: string
       }
     }
+    user: {
+      accessToken?: string
+      username?: string
+    }
   }
 }
