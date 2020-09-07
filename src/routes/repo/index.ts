@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Octokit } from '@octokit/core';
-import { getgid } from 'process';
 import { exec } from 'child_process';
 
 require('dotenv').config();
@@ -51,8 +50,9 @@ repo.get(
     const octokit = new Octokit({ auth: accessToken });
 
     try {
-      const repo = await octokit.request(`GET /repos/${fullRepoName}`);
-      const { html_url } = repo.data;
+      const {
+        data: { html_url },
+      } = await octokit.request(`GET /repos/${fullRepoName}`);
 
       res.json({
         url: html_url,
@@ -72,7 +72,7 @@ repo.post(
     const octokit = new Octokit({ auth: accessToken });
 
     try {
-      const resp = await octokit.request('POST /user/repos', {
+      await octokit.request('POST /user/repos', {
         name: repoName,
       });
 
@@ -87,38 +87,44 @@ repo.post(
 
 repo.post('/save', async (req: Request, res: Response, next: NextFunction) => {
   const { accessToken, username, repoName } = userData;
+
   const message = 'commit';
+  const branch = 'origin/master';
 
-  const octokit = new Octokit({ auth: accessToken });
+  const cdToDockerVolume = 'cd ../repo_volume';
 
-  try {
-    const resp = await octokit.request(
-      `POST /repos/${username}/${repoName}/git/commits`,
-      {
-        accept: 'application/vnd.github.v3+json',
-        message,
-        //      tree: TODO
-        //      parents: TODO
+  const gitAdd = 'git add .';
+  const gitCommit = `git commit -m "${message}"`;
+  const gitPush = `git push`;
+
+  exec(
+    ` ${cdToDockerVolume}; ${gitAdd}; ${gitCommit}; ${gitPush}`,
+    (err, stdout, stderr) => {
+      if (err) {
+        console.error('push error', repoName);
+        console.error(err);
+        next(err);
+      } else {
+        console.log('push done', repoName);
+        console.log(stdout);
+        res.json({
+          message: stdout || 'changes has been saved',
+        });
       }
-    );
-
-    res.json({
-      message: 'success',
-    });
-  } catch (error) {
-    return next(error);
-  }
+    }
+  );
 });
 
 repo.get('/update', async (req: Request, res: Response, next: NextFunction) => {
   const { accessToken, username, repoName } = userData;
 
-  const cdToDockerVolume = 'cd ../repository';
+  const cdToDockerVolume = 'cd ../repo_volume';
   const doesRepoExist = '[ -d .git ];';
-  const gitPull = 'git pull;';
+  const gitFetch = 'git fetch --all; git reset --hard origin/master; ';
   const gitClone = `git clone https://${accessToken}@github.com/${username}/${repoName}.git .;`;
+
   exec(
-    `${cdToDockerVolume}; if ${doesRepoExist} then ${gitPull} else ${gitClone} fi `,
+    ` ${cdToDockerVolume}; if ${doesRepoExist} then ${gitFetch} else ${gitClone} fi `,
     (err, stdout, stderr) => {
       if (err) {
         console.error('cloning error', repoName);
@@ -128,7 +134,7 @@ repo.get('/update', async (req: Request, res: Response, next: NextFunction) => {
         console.log('cloning done', repoName);
         console.log(stdout);
         res.json({
-          message: stdout,
+          message: stdout || 'repo has been cloned',
         });
       }
     }
