@@ -91,7 +91,7 @@ repo.post('/save', async (req: Request, res: Response, next: NextFunction) => {
   const message = 'commit';
   const branch = 'origin/master';
 
-  const cdToDockerVolume = 'cd ../repo_volume';
+  const cdToDockerVolume = 'cd ../repository';
 
   const gitAdd = 'git add .';
   const gitCommit = `git commit -m "${message}"`;
@@ -118,13 +118,14 @@ repo.post('/save', async (req: Request, res: Response, next: NextFunction) => {
 repo.get('/update', async (req: Request, res: Response, next: NextFunction) => {
   const { accessToken, username, repoName } = userData;
 
-  const cdToDockerVolume = 'cd ../repo_volume';
+  const cdToDockerVolume = 'cd ../repository';
   const doesRepoExist = '[ -d .git ];';
   const gitFetch = 'git fetch --all; git reset --hard origin/master; ';
   const gitClone = `git clone https://${accessToken}@github.com/${username}/${repoName}.git .;`;
+  const setInitialConfig = `git config user.name "${username}"; git config user.email "<>";`;
 
   exec(
-    ` ${cdToDockerVolume}; if ${doesRepoExist} then ${gitFetch} else ${gitClone} fi `,
+    ` ${cdToDockerVolume}; if ${doesRepoExist} then ${gitFetch} else ${gitClone} ${setInitialConfig} fi;  `,
     (err, stdout, stderr) => {
       if (err) {
         console.error('cloning error', repoName);
