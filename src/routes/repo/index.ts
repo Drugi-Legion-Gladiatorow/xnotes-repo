@@ -81,28 +81,35 @@ repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFu
 
 repo.post("/save", async (req: Request, res: Response, next: NextFunction) => {
   const { accessToken, username, repoName } = userData
+
   const message = "commit"
+  const branch = "origin/master"
 
-  const octokit = new Octokit({ auth: accessToken })
-  // blob ->
-  try {
-    await octokit.request(`POST /repos/${username}/${repoName}/git/commits`, {
-      accept: "application/vnd.github.v3+json",
-      message,
-    })
+  const cdToDockerVolume = "cd ../repo_volume"
 
-    res.json({
-      message: "success",
-    })
-  } catch (error) {
-    return next(error)
-  }
+  const gitAdd = "git add ."
+  const gitCommit = `git commit -m "${message}"`
+  const gitPush = `git push https://${accessToken}@github.com/${username}/${repoName}.git ${branch}`
+
+  exec(` ${cdToDockerVolume}; ${gitAdd}; ${gitCommit}; ${gitPush}`, (err, stdout, stderr) => {
+    if (err) {
+      console.error("push error", repoName)
+      console.error(err)
+      next(err)
+    } else {
+      console.log("push done", repoName)
+      console.log(stdout)
+      res.json({
+        message: stdout || "changes has been saved",
+      })
+    }
+  })
 })
 
 repo.get("/update", async (req: Request, res: Response, next: NextFunction) => {
   const { accessToken, username, repoName } = userData
 
-  const cdToDockerVolume = "cd ../repository"
+  const cdToDockerVolume = "cd ../repo_volume"
   const doesRepoExist = "[ -d .git ];"
   const gitPull = "git pull;"
   const gitClone = `git clone https://${accessToken}@github.com/${username}/${repoName}.git .;`

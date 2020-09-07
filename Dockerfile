@@ -1,7 +1,7 @@
 FROM node:14.5-alpine
 
 ADD . ./app
-RUN mkdir ./repository
+RUN mkdir ./repo_volume
 
 WORKDIR /app 
 
