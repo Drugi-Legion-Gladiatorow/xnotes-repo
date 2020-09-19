@@ -8,21 +8,11 @@ require("dotenv").config()
 
 const repo = Router()
 
-// MOCKED USER DATA
-const userData = {
-  githubId: process.env.USER_ID,
-  accessToken: process.env.USER_ACCESS_TOKEN,
-  username: process.env.USER_NAME,
-  displayName: "null",
-  repoName: "notes",
-}
-
 const cdToDockerVolume = "cd repo_volume"
 
-// http://localhost:PORT/api
 repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
     exec(`${cdToDockerVolume}; ls;`, (err, stdout, stderr) => {
-        // TODO: done handler flag
+
         if (err) {
           console.error(err)
           next(err)
@@ -35,11 +25,10 @@ repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
       })
 })
 
-// http://localhost:PORT/api/find-repo/:name
 repo.post("/createDir/:name", async (req: Request, res: Response, next: NextFunction) => {
     const { name: directoryName } = req.params
     exec(`${cdToDockerVolume}; mkdir ${directoryName};`, (err, stdout, stderr) => {
-        // TODO: done handler flag
+
         if (err) {
             res.json({
                 meeage: err.message,
@@ -56,7 +45,7 @@ repo.post("/createDir/:name", async (req: Request, res: Response, next: NextFunc
 repo.post("/createFile/:name", async (req: Request, res: Response, next: NextFunction) => {
     const { name: directoryName } = req.params
     exec(`${cdToDockerVolume}; touch ${directoryName};`, (err, stdout, stderr) => {
-        // TODO: done handler flag
+
         if (err) {
             res.json({
                 meeage: err.message,
@@ -73,7 +62,7 @@ repo.post("/createFile/:name", async (req: Request, res: Response, next: NextFun
 repo.delete("/deleteFile/:name", async (req: Request, res: Response, next: NextFunction) => {
     const { name: directoryName } = req.params
     exec(`${cdToDockerVolume}; rm ${directoryName};`, (err, stdout, stderr) => {
-        // TODO: done handler flag
+
         if (err) {
             res.json({
                 meeage: err.message,
@@ -90,7 +79,7 @@ repo.delete("/deleteFile/:name", async (req: Request, res: Response, next: NextF
 repo.delete("/deleteDir/:name", async (req: Request, res: Response, next: NextFunction) => {
     const { name: directoryName } = req.params
     exec(`${cdToDockerVolume}; rm -rf ${directoryName};`, (err, stdout, stderr) => {
-        // TODO: done handler flag
+
         if (err) {
             res.json({
                 meeage: err.message,
