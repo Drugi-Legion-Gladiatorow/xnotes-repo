@@ -8,7 +8,7 @@ require("dotenv").config()
 
 const repo = Router()
 
-const cdToDockerVolume = "cd repo_volume"
+const cdToDockerVolume = "cd ../repo_volume"
 
 repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
     exec(`${cdToDockerVolume}; ls;`, (err, stdout, stderr) => {
@@ -94,7 +94,7 @@ repo.delete("/deleteDir/:name", async (req: Request, res: Response, next: NextFu
 })
 
 repo.patch("/updateFile/:name", async (req: Request, res: Response, next: NextFunction) => {
-    const repoDirectory = './repo_volume/';
+    const repoDirectory = '../repo_volume/';
     const { name: name } = req.params
     if(!req.body.content) {
         res.status(400)
@@ -118,7 +118,7 @@ repo.patch("/updateFile/:name", async (req: Request, res: Response, next: NextFu
 })
 
 repo.post("/uploadFile/:name", async (req: Request, res: Response, next: NextFunction) => {
-    const repoDirectory = './repo_volume/';
+    const repoDirectory = '../repo_volume/';
     const { name: name } = req.params
     if(!req.body.blob) {
         res.status(400)
@@ -126,7 +126,7 @@ repo.post("/uploadFile/:name", async (req: Request, res: Response, next: NextFun
             meeage: 'field:blob missing',
           })
     }
-    var buf = Buffer.from(req.body.blob, 'binary'); // decode
+    var buf = Buffer.from(req.body.blob, 'binary');
     fs.writeFile(`${repoDirectory}${name}`, buf, function(err) {
         if (err) {
             res.json({
