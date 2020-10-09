@@ -9,6 +9,7 @@ const morgan = require("morgan")
 const helmet = require("helmet")
 
 const repo = require("./routes/repo")
+const file = require("./routes/file")
 const session = require("express-session")
 
 const app = express()
@@ -53,6 +54,7 @@ app.get("/home", (req, res, next) => {
 
 // localhost:3000/api/=>
 app.use("/api", repo)
+app.use("/file", file)
 
 // ERROR HANDLERS
 app.use(notFound)
