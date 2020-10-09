@@ -35,13 +35,14 @@ repo.get("/", (req: Request, res: Response, next: NextFunction): void => {
 
   res.json({
     message: "=> from /api",
+    user: req.session.user
   })
 })
 
 // http://localhost:PORT/api/find-repo/:name
 repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunction) => {
   const { name: repoName } = req.params
-  const { username, accessToken } = userData
+  const { username, accessToken } = req.session.user;
 
   const fullRepoName = `${username}/${repoName}`
 
@@ -61,7 +62,7 @@ repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunct
 
 repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFunction) => {
   const { name: repoName } = req.params
-  const { accessToken } = userData
+  const { accessToken } = req.session.user;
 
   const octokit = new Octokit({ auth: accessToken })
 
@@ -80,7 +81,7 @@ repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFu
 
 repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFunction) => {
   const { name: repoName } = req.params
-  const { accessToken } = userData
+  const { accessToken } = req.session.user;
 
   const octokit = new Octokit({ auth: accessToken })
 
@@ -97,11 +98,11 @@ repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFu
   }
 })
 
-repo.post("/save", async (req: Request, res: Response, next: NextFunction) => {
-  const { accessToken, username, repoName } = userData
+repo.post("/save/:name", async (req: Request, res: Response, next: NextFunction) => {
+  const { name: repoName } = req.params
+  const { accessToken, username } = req.session.user;
 
   const message = "commit"
-  const branch = "origin/master"
 
   // relative path issue
   const cdToDockerVolume = "cd ../repository"
@@ -129,7 +130,8 @@ repo.post("/save", async (req: Request, res: Response, next: NextFunction) => {
 })
 
 repo.get("/update", async (req: Request, res: Response, next: NextFunction) => {
-  const { accessToken, username, repoName } = userData
+  const { name: repoName } = req.params
+  const { accessToken, username} = req.session.user;
 
   // relative path issue
   const cdToDockerVolume = "cd ../repository"
