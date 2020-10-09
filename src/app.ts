@@ -40,6 +40,11 @@ app.get("/login", (req, res, next) => {
     username: username?.toString(),
   }
 
+  if (!user.accessToken || !user.username) {
+    const error = new Error("user not found")
+    return next(error)
+  }
+
   req.session.user = user
 
   res.redirect("/home")
@@ -47,7 +52,12 @@ app.get("/login", (req, res, next) => {
 
 app.get("/home", (req, res, next) => {
   // TODO: check if user is authenticated
-  res.sendFile(path.join(__dirname + "/public/home.html"))
+  if (req.session.user) {
+    res.sendFile(path.join(__dirname + "/public/home.html"))
+  } else {
+    const error = new Error("user not granted")
+    next(error)
+  }
 })
 
 // /API ENDPOINT ROUTES

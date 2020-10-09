@@ -51,9 +51,27 @@ repo.get("/find-repo/:name", async (req: Request, res: Response, next: NextFunct
     const {
       data: { html_url },
     } = await octokit.request(`GET /repos/${fullRepoName}`)
-
     res.json({
       url: html_url,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+repo.post("/create-repo/:name", async (req: Request, res: Response, next: NextFunction) => {
+  const { name: repoName } = req.params
+  const { accessToken } = userData
+
+  const octokit = new Octokit({ auth: accessToken })
+
+  try {
+    await octokit.request("POST /user/repos", {
+      name: repoName,
+    })
+
+    res.json({
+      info: "repo has been created",
     })
   } catch (error) {
     return next(error)
@@ -94,6 +112,7 @@ repo.post("/save", async (req: Request, res: Response, next: NextFunction) => {
 
   exec(` ${cdToDockerVolume}; ${gitAdd}; ${gitCommit}; ${gitPush}`, (err, stdout, stderr) => {
     // TODO: done handler flag
+
     if (err) {
       console.error("push error", repoName)
       console.error(err)

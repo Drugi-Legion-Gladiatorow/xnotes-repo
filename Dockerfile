@@ -1,6 +1,9 @@
 FROM node:14.5-alpine
+
 ADD . ./app
-WORKDIR /app
+RUN mkdir ./repo_volume
+
+WORKDIR /app 
 
 ENV NODE_ENV dev
 # RUN ls -a 
